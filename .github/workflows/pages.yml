@@ -1,0 +1,43 @@
+name: Publicar painel
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency:
+  group: github-pages
+  cancel-in-progress: false
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+      - name: Configurar URL da API
+        env:
+          RADAR_API_URL: ${{ vars.RADAR_API_URL }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+          from urllib.parse import urlsplit
+
+          url = os.environ.get("RADAR_API_URL", "").strip().rstrip("/")
+          if url:
+              parts = urlsplit(url)
+              if parts.scheme != "https" or not parts.hostname or parts.username or parts.query or parts.fragment or parts.path:
+                  raise SystemExit("RADAR_API_URL deve ser uma origem HTTPS, sem /api ou outros caminhos.")
+          Path("web/config.js").write_text("window.RADAR_API_URL = " + json.dumps(url) + ";\n")
+          PY
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web
+      - uses: actions/deploy-pages@v4
+        id: deploy
