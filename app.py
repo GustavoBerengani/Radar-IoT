@@ -88,7 +88,7 @@ if pages_origin:
     app.add_middleware(
         CORSMiddleware,
         allow_origins=[pages_origin],
-        allow_methods=["GET", "PATCH"],
+        allow_methods=["GET", "PATCH", "DELETE"],
         allow_headers=["Content-Type", "X-Radar-Key"],
     )
 
@@ -148,7 +148,7 @@ def status():
         estado = conn.execute("SELECT * FROM coleta WHERE id=1").fetchone()
     ativo = bool(estado and time.time() - estado["atualizado"] <= 16)
     return {"coletor": ativo, "arduino": bool(ativo and estado["conectado"]),
-            "porta": estado["porta"] if ativo else None, "chave_edicao": bool(ADMIN_KEY)}
+            "porta": estado["porta"] if ativo else None, "chave_edicao": bool(ADMIN_KEY), "exclusao": True}
 
 
 @app.get("/api/registros")
@@ -222,3 +222,19 @@ def associar(registro_id: int, associacao: Associacao, x_radar_key: str = Header
         if not cursor.rowcount:
             raise HTTPException(404, "Registro não encontrado")
     return {"ok": True}
+
+@app.delete("/api/registros/{captura_id}")
+def excluir_registro(captura_id: UUID):
+    with banco() as conn:
+        cursor = conn.execute("DELETE FROM registros WHERE captura_id=? AND simulado=0",
+                              (str(captura_id),))
+        if cursor.rowcount == 0:
+            raise HTTPException(404, "Registro não encontrado")
+    return {"excluidos": 1}
+
+
+@app.delete("/api/registros")
+def limpar_registros(confirmacao: Literal["LIMPAR"]):
+    with banco() as conn:
+        cursor = conn.execute("DELETE FROM registros WHERE simulado=0")
+        return {"excluidos": cursor.rowcount}
