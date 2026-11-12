@@ -45,7 +45,6 @@ dialog{max-width:min(430px,calc(100vw - 32px));color:var(--text);background:#121
 <h2 id="titulo-exclusao"></h2>
 <p id="descricao-exclusao"></p>
 <label id="confirmacao-label" hidden>Digite LIMPAR para confirmar<input id="confirmacao" autocomplete="off"></label>
-<label>Chave de acesso<input id="chave-exclusao" type="password" autocomplete="off" required></label>
 <p id="erro-exclusao" role="alert"></p>
 <div class="actions"><button type="button" id="cancelar-exclusao">Cancelar</button><button class="perigo" id="confirmar-exclusao">Excluir</button></div>
 </form>
@@ -177,7 +176,6 @@ function abrirExclusao(registro) {
   by('confirmacao-label').hidden=Boolean(registro);
   by('confirmacao').required=!registro;
   by('confirmacao').value='';
-  by('chave-exclusao').value='';
   by('erro-exclusao').textContent='';
   by('confirmar-exclusao').textContent=registro?'Excluir registro':'Limpar histórico';
   modal.showModal();
@@ -185,7 +183,6 @@ function abrirExclusao(registro) {
 by('limpar-historico').onclick=()=>abrirExclusao(null);
 by('cancelar-exclusao').onclick=()=>modal.close();
 modal.oncancel=e=>{if(excluindo)e.preventDefault();};
-modal.onclose=()=>{by('chave-exclusao').value='';};
 by('form-exclusao').onsubmit=async e=>{
   e.preventDefault();
   if(excluindo)return;
@@ -201,13 +198,12 @@ by('form-exclusao').onsubmit=async e=>{
     const rota=registroExclusao
       ? 'registros/'+encodeURIComponent(registroExclusao.captura_id)
       : 'registros?confirmacao=LIMPAR';
-    await API(rota,{method:'DELETE',headers:{'X-Radar-Key':by('chave-exclusao').value}});
+    await API(rota,{method:'DELETE'});
     pagina=1;
     modal.close();
     await atualizar();
   } catch(erro) {
-    by('erro-exclusao').textContent=erro.message==='HTTP 401'
-      ? 'Chave de acesso inválida.' : 'Não foi possível excluir. '+erro.message;
+    by('erro-exclusao').textContent='Não foi possível excluir. '+erro.message;
   } finally {
     excluindo=false;
     by('confirmar-exclusao').disabled=false;
