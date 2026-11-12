@@ -6,6 +6,9 @@
 <style>
 :root{color-scheme:dark;--bg:#080e1a;--panel:#101a2b;--line:#23334c;--text:#edf5ff;--muted:#a8bad2;--blue:#61baff;--green:#5ee3af;--orange:#ffb46d}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#122647,transparent 58%),var(--bg);font:15px system-ui,sans-serif;color:var(--text);min-height:100vh}main{max-width:1220px;margin:auto;padding:34px 24px 48px}header,.bar,.actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}h1{font-size:clamp(32px,6vw,52px);margin:0;letter-spacing:-.055em}h2{font-size:20px;margin:0}p{color:var(--muted);margin:6px 0 0}.status{display:flex;gap:8px;flex-wrap:wrap}.chip,button,select,input{border:1px solid var(--line);border-radius:8px;padding:8px 11px;background:#0b1525;color:var(--text);font:inherit}.chip{font-size:13px}.ok{color:var(--green)}.alert{color:var(--orange)}button,select{cursor:pointer}button:hover{border-color:var(--blue)}button:disabled{opacity:.45;cursor:default}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 14px}.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.card span{color:var(--muted);font-size:13px}.card strong{display:block;font-size:clamp(24px,3vw,37px);margin-top:7px;font-variant-numeric:tabular-nums}.charts{display:grid;grid-template-columns:2fr 1fr;gap:14px}.plot{height:235px;position:relative;margin-top:10px}.plot svg{width:100%;height:100%;overflow:visible}.empty{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted)}section{margin-top:14px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;white-space:nowrap;margin-top:10px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:11px 10px}th{color:var(--muted);font-size:13px;font-weight:500}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.filters input{max-width:190px;min-width:110px}.filters label{display:grid;gap:3px;font-size:12px;color:var(--muted)}.pager{display:flex;align-items:center;gap:10px;margin-top:12px}.muted{color:var(--muted)}.error{color:var(--orange);margin-top:12px}footer{margin-top:18px;color:var(--muted);font-size:13px}@media(max-width:760px){main{padding:24px 14px}.cards{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}.panel,.card{padding:13px}}
+
+.perigo{color:#ffabab;border-color:#74424a}.perigo:hover{border-color:#ffabab}.historico-acoes{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+dialog{max-width:min(430px,calc(100vw - 32px));color:var(--text);background:#121c2b;border:1px solid #74424a;border-radius:12px;padding:22px}dialog::backdrop{background:#070b13bb}dialog label{display:grid;gap:6px;margin:12px 0}dialog .actions{justify-content:flex-end}dialog [hidden],button[hidden]{display:none}
 </style>
 </head>
 <body>
@@ -25,18 +28,28 @@
 <div class="panel"><h2>Detecções por minuto</h2><div class="plot" id="deteccoes"></div></div>
 </div>
 <section class="panel">
-<div class="bar"><h2>Histórico</h2><span id="contagem" class="muted"></span></div>
+<div class="bar"><h2>Histórico</h2><div class="historico-acoes"><span id="contagem" class="muted"></span><button type="button" class="perigo" id="limpar-historico" hidden>Limpar histórico</button></div></div>
 <form id="filtros" class="filters">
 <label>De<input name="inicio" type="datetime-local"></label><label>Até<input name="fim" type="datetime-local"></label>
 <label>Radar<input name="radar" placeholder="RADAR_01"></label>
 <label>Mín. km/h<input name="minima" type="number" min="0" step="any"></label><label>Máx. km/h<input name="maxima" type="number" min="0" step="any"></label>
 <label>Situação<select name="situacao"><option value="">Todas</option><option value="normal">Dentro do limite</option><option value="excesso">Possíveis excessos</option></select></label>
 <div class="actions"><button type="submit">Filtrar</button><button type="reset">Limpar</button></div></form>
-<div class="scroll"><table><thead><tr><th>Data e hora</th><th>Radar</th><th>Velocidade</th><th>Limite</th><th>Diferença</th><th>Situação</th></tr></thead><tbody id="historico"></tbody></table></div>
+<div class="scroll"><table><thead><tr><th>Data e hora</th><th>Radar</th><th>Velocidade</th><th>Limite</th><th>Diferença</th><th>Situação</th><th>Ações</th></tr></thead><tbody id="historico"></tbody></table></div>
 <div class="pager"><button id="anterior">Anterior</button><span id="pagina"></span><button id="proxima">Próxima</button></div>
 </section>
 <footer>Protótipo acadêmico. Os possíveis excessos são demonstrativos.</footer>
 </main>
+<dialog id="exclusao" aria-labelledby="titulo-exclusao">
+<form id="form-exclusao">
+<h2 id="titulo-exclusao"></h2>
+<p id="descricao-exclusao"></p>
+<label id="confirmacao-label" hidden>Digite LIMPAR para confirmar<input id="confirmacao" autocomplete="off"></label>
+<label>Chave de acesso<input id="chave-exclusao" type="password" autocomplete="off" required></label>
+<p id="erro-exclusao" role="alert"></p>
+<div class="actions"><button type="button" id="cancelar-exclusao">Cancelar</button><button class="perigo" id="confirmar-exclusao">Excluir</button></div>
+</form>
+</dialog>
 <script src="./config.js"></script>
 <script>
 const by = id => document.getElementById(id);
@@ -44,8 +57,8 @@ const kmh = v => v == null ? '—' : Number(v).toLocaleString('pt-BR',{maximumFr
 const data = v => new Date(v).toLocaleString('pt-BR');
 let pagina = 1, filtros = new URLSearchParams(), atualizacao = 0;
 const origemAPI = window.RADAR_API_URL || '';
-const API = async (rota) => {
-  const resposta = await fetch(origemAPI+'/api/'+rota, {cache:'no-store'});
+const API = async (rota, opcoes) => {
+  const resposta = await fetch(origemAPI+'/api/'+rota, {cache:'no-store', ...opcoes});
   if (!resposta.ok) throw Error('HTTP '+resposta.status);
   return resposta.json();
 };
@@ -112,6 +125,8 @@ async function atualizar() {
     chip('arduino','Arduino · '+(estado.arduino?'serial aberta ('+estado.porta+')':'desconectado'),estado.arduino);
     by('erro').textContent='';
     by('total').textContent=stats.total;
+    by('limpar-historico').hidden=!estado.exclusao;
+    by('limpar-historico').disabled=!stats.total;
     by('media').textContent=kmh(stats.media);
     by('maior').textContent=kmh(stats.maior);
     by('excessos').textContent=stats.excessos;
@@ -126,9 +141,14 @@ async function atualizar() {
     for(const r of historico.registros){
       const status=document.createElement('span');status.textContent=r.status==='excesso'?'Possível excesso':'Dentro do limite';
       status.className=r.status==='excesso'?'alert':'ok';
-      linha(tb,[data(r.capturado_em),r.radar_id,kmh(r.velocidade_kmh),kmh(r.velocidade_max_kmh),r.status==='excesso'?kmh(r.velocidade_kmh-r.velocidade_max_kmh):'—',status]);
+      const excluir=document.createElement('button');
+      excluir.type='button';
+      excluir.className='perigo';
+      excluir.textContent='Excluir';
+      excluir.onclick=()=>abrirExclusao(r);
+      linha(tb,[data(r.capturado_em),r.radar_id,kmh(r.velocidade_kmh),kmh(r.velocidade_max_kmh),r.status==='excesso'?kmh(r.velocidade_kmh-r.velocidade_max_kmh):'—',status,estado.exclusao?excluir:'—']);
     }
-    if(!tb.rows.length)vazio(tb,'Nenhuma passagem encontrada.',6);
+    if(!tb.rows.length)vazio(tb,'Nenhuma passagem encontrada.',7);
     by('contagem').textContent=historico.total+' registros';
     by('pagina').textContent='Página '+pagina;
     by('anterior').disabled=pagina===1;by('proxima').disabled=pagina*25>=historico.total;
@@ -145,6 +165,55 @@ by('filtros').onsubmit=e=>{
 };
 by('filtros').onreset=()=>{filtros=new URLSearchParams();pagina=1;atualizar();};
 by('anterior').onclick=()=>{pagina--;atualizar();};by('proxima').onclick=()=>{pagina++;atualizar();};
+let registroExclusao;
+let excluindo=false;
+const modal=by('exclusao');
+function abrirExclusao(registro) {
+  registroExclusao=registro;
+  by('titulo-exclusao').textContent=registro?'Excluir registro':'Limpar histórico';
+  by('descricao-exclusao').textContent=registro
+    ? 'Excluir '+kmh(registro.velocidade_kmh)+' de '+data(registro.capturado_em)+'?'
+    : 'Todas as passagens serão excluídas, inclusive as que estão fora dos filtros atuais.';
+  by('confirmacao-label').hidden=Boolean(registro);
+  by('confirmacao').required=!registro;
+  by('confirmacao').value='';
+  by('chave-exclusao').value='';
+  by('erro-exclusao').textContent='';
+  by('confirmar-exclusao').textContent=registro?'Excluir registro':'Limpar histórico';
+  modal.showModal();
+}
+by('limpar-historico').onclick=()=>abrirExclusao(null);
+by('cancelar-exclusao').onclick=()=>modal.close();
+modal.oncancel=e=>{if(excluindo)e.preventDefault();};
+modal.onclose=()=>{by('chave-exclusao').value='';};
+by('form-exclusao').onsubmit=async e=>{
+  e.preventDefault();
+  if(excluindo)return;
+  if(!registroExclusao && by('confirmacao').value.trim()!=='LIMPAR'){
+    by('erro-exclusao').textContent='Digite LIMPAR para confirmar.';
+    return;
+  }
+  excluindo=true;
+  by('confirmar-exclusao').disabled=true;
+  by('cancelar-exclusao').disabled=true;
+  by('erro-exclusao').textContent='';
+  try {
+    const rota=registroExclusao
+      ? 'registros/'+encodeURIComponent(registroExclusao.captura_id)
+      : 'registros?confirmacao=LIMPAR';
+    await API(rota,{method:'DELETE',headers:{'X-Radar-Key':by('chave-exclusao').value}});
+    pagina=1;
+    modal.close();
+    await atualizar();
+  } catch(erro) {
+    by('erro-exclusao').textContent=erro.message==='HTTP 401'
+      ? 'Chave de acesso inválida.' : 'Não foi possível excluir. '+erro.message;
+  } finally {
+    excluindo=false;
+    by('confirmar-exclusao').disabled=false;
+    by('cancelar-exclusao').disabled=false;
+  }
+};
 if (location.hostname.endsWith('.github.io') && !origemAPI) {
   by('servidor').textContent='Servidor · aguardando configuração';
   by('erro').textContent='O painel foi publicado. Falta configurar RADAR_API_URL no repositório para receber passagens.';
