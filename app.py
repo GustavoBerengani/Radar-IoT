@@ -148,7 +148,7 @@ def status():
         estado = conn.execute("SELECT * FROM coleta WHERE id=1").fetchone()
     ativo = bool(estado and time.time() - estado["atualizado"] <= 16)
     return {"coletor": ativo, "arduino": bool(ativo and estado["conectado"]),
-            "porta": estado["porta"] if ativo else None, "chave_edicao": bool(ADMIN_KEY), "exclusao": bool(ADMIN_KEY)}
+            "porta": estado["porta"] if ativo else None, "chave_edicao": bool(ADMIN_KEY), "exclusao": True}
 
 
 @app.get("/api/registros")
@@ -223,15 +223,8 @@ def associar(registro_id: int, associacao: Associacao, x_radar_key: str = Header
             raise HTTPException(404, "Registro não encontrado")
     return {"ok": True}
 
-def autorizar_exclusao(chave: str):
-    if not ADMIN_KEY:
-        raise HTTPException(503, "Configure RADAR_API_KEY ou RADAR_ADMIN_KEY")
-    autorizar(ADMIN_KEY, chave)
-
-
 @app.delete("/api/registros/{captura_id}")
-def excluir_registro(captura_id: UUID, x_radar_key: str = Header(default="")):
-    autorizar_exclusao(x_radar_key)
+def excluir_registro(captura_id: UUID):
     with banco() as conn:
         cursor = conn.execute("DELETE FROM registros WHERE captura_id=? AND simulado=0",
                               (str(captura_id),))
@@ -241,8 +234,7 @@ def excluir_registro(captura_id: UUID, x_radar_key: str = Header(default="")):
 
 
 @app.delete("/api/registros")
-def limpar_registros(confirmacao: Literal["LIMPAR"], x_radar_key: str = Header(default="")):
-    autorizar_exclusao(x_radar_key)
+def limpar_registros(confirmacao: Literal["LIMPAR"]):
     with banco() as conn:
         cursor = conn.execute("DELETE FROM registros WHERE simulado=0")
         return {"excluidos": cursor.rowcount}
