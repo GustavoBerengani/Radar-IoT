@@ -5,14 +5,14 @@
 <title>Radar IoT</title>
 <style>
 :root{color-scheme:dark;--bg:#080e1a;--panel:#101a2b;--line:#23334c;--text:#edf5ff;--muted:#a8bad2;--blue:#61baff;--green:#5ee3af;--orange:#ffb46d}
-*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#122647,transparent 58%),var(--bg);font:15px system-ui,sans-serif;color:var(--text);min-height:100vh}main{max-width:1220px;margin:auto;padding:34px 24px 48px}header,.bar,.actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}h1{font-size:clamp(32px,6vw,52px);margin:0;letter-spacing:-.055em}h2{font-size:20px;margin:0}p{color:var(--muted);margin:6px 0 0}.status{display:flex;gap:8px;flex-wrap:wrap}.chip,button,select,input{border:1px solid var(--line);border-radius:8px;padding:8px 11px;background:#0b1525;color:var(--text);font:inherit}.chip{font-size:13px}.ok{color:var(--green)}.alert{color:var(--orange)}button,select{cursor:pointer}button:hover{border-color:var(--blue)}button:disabled{opacity:.45;cursor:default}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 14px}.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.card span{color:var(--muted);font-size:13px}.card strong{display:block;font-size:clamp(24px,3vw,37px);margin-top:7px;font-variant-numeric:tabular-nums}.charts{display:grid;grid-template-columns:2fr 1fr;gap:14px}.plot{height:235px;position:relative;margin-top:10px}.plot svg{width:100%;height:100%;overflow:visible}.empty{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted)}section{margin-top:14px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;white-space:nowrap;margin-top:10px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:11px 10px}th{color:var(--muted);font-size:13px;font-weight:500}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.filters input{max-width:190px;min-width:110px}.filters label{display:grid;gap:3px;font-size:12px;color:var(--muted)}.pager{display:flex;align-items:center;gap:10px;margin-top:12px}.muted{color:var(--muted)}dialog{background:var(--panel);border:1px solid var(--line);border-radius:12px;color:var(--text);padding:22px}dialog::backdrop{background:#000a}dialog input{display:block;width:100%;margin:8px 0}.error{color:var(--orange);margin-top:12px}footer{margin-top:18px;color:var(--muted);font-size:13px}@media(max-width:760px){main{padding:24px 14px}.cards{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}.panel,.card{padding:13px}}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at 80% 0%,#122647,transparent 58%),var(--bg);font:15px system-ui,sans-serif;color:var(--text);min-height:100vh}main{max-width:1220px;margin:auto;padding:34px 24px 48px}header,.bar,.actions{display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}h1{font-size:clamp(32px,6vw,52px);margin:0;letter-spacing:-.055em}h2{font-size:20px;margin:0}p{color:var(--muted);margin:6px 0 0}.status{display:flex;gap:8px;flex-wrap:wrap}.chip,button,select,input{border:1px solid var(--line);border-radius:8px;padding:8px 11px;background:#0b1525;color:var(--text);font:inherit}.chip{font-size:13px}.ok{color:var(--green)}.alert{color:var(--orange)}button,select{cursor:pointer}button:hover{border-color:var(--blue)}button:disabled{opacity:.45;cursor:default}.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:24px 0 14px}.panel,.card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px}.card span{color:var(--muted);font-size:13px}.card strong{display:block;font-size:clamp(24px,3vw,37px);margin-top:7px;font-variant-numeric:tabular-nums}.charts{display:grid;grid-template-columns:2fr 1fr;gap:14px}.plot{height:235px;position:relative;margin-top:10px}.plot svg{width:100%;height:100%;overflow:visible}.empty{display:grid;place-items:center;height:100%;text-align:center;color:var(--muted)}section{margin-top:14px}.scroll{overflow:auto}table{border-collapse:collapse;width:100%;white-space:nowrap;margin-top:10px}th,td{text-align:left;border-bottom:1px solid var(--line);padding:11px 10px}th{color:var(--muted);font-size:13px;font-weight:500}.filters{display:flex;gap:8px;flex-wrap:wrap;margin-top:13px}.filters input{max-width:190px;min-width:110px}.filters label{display:grid;gap:3px;font-size:12px;color:var(--muted)}.pager{display:flex;align-items:center;gap:10px;margin-top:12px}.muted{color:var(--muted)}.error{color:var(--orange);margin-top:12px}footer{margin-top:18px;color:var(--muted);font-size:13px}@media(max-width:760px){main{padding:24px 14px}.cards{grid-template-columns:repeat(2,1fr)}.charts{grid-template-columns:1fr}.panel,.card{padding:13px}}
 </style>
 </head>
 <body>
 <main>
 <header><div><h1>Radar IoT</h1><p>Monitoramento de velocidade do protótipo Arduino</p></div>
 <div class="status"><span class="chip" id="servidor">Servidor · conectando</span><span class="chip" id="coletor">Coletor · —</span><span class="chip" id="arduino">Arduino · —</span></div></header>
-<section class="bar"><h2>Monitoramento</h2><select id="fonte" aria-label="Origem dos registros"><option value="false">Passagens reais</option><option value="true">Modo simulado</option></select></section>
+<section class="bar"><h2>Monitoramento</h2></section>
 <p id="erro" class="error" role="status"></p>
 <div class="cards">
 <div class="card"><span>Passagens registradas</span><strong id="total">—</strong></div>
@@ -28,27 +28,24 @@
 <div class="bar"><h2>Histórico</h2><span id="contagem" class="muted"></span></div>
 <form id="filtros" class="filters">
 <label>De<input name="inicio" type="datetime-local"></label><label>Até<input name="fim" type="datetime-local"></label>
-<label>Radar<input name="radar" placeholder="RADAR_01"></label><label>Participante<input name="participante" placeholder="Nome ou apelido"></label>
+<label>Radar<input name="radar" placeholder="RADAR_01"></label>
 <label>Mín. km/h<input name="minima" type="number" min="0" step="any"></label><label>Máx. km/h<input name="maxima" type="number" min="0" step="any"></label>
 <label>Situação<select name="situacao"><option value="">Todas</option><option value="normal">Dentro do limite</option><option value="excesso">Possíveis excessos</option></select></label>
 <div class="actions"><button type="submit">Filtrar</button><button type="reset">Limpar</button></div></form>
-<div class="scroll"><table><thead><tr><th>Data e hora</th><th>Radar</th><th>Participante</th><th>Velocidade</th><th>Limite</th><th>Diferença</th><th>Situação</th></tr></thead><tbody id="historico"></tbody></table></div>
+<div class="scroll"><table><thead><tr><th>Data e hora</th><th>Radar</th><th>Velocidade</th><th>Limite</th><th>Diferença</th><th>Situação</th></tr></thead><tbody id="historico"></tbody></table></div>
 <div class="pager"><button id="anterior">Anterior</button><span id="pagina"></span><button id="proxima">Próxima</button></div>
 </section>
-<section class="panel"><div class="bar"><h2>Ranking de participantes</h2><select id="ordem" aria-label="Ordenação do ranking"><option value="maior">Maior velocidade</option><option value="media">Velocidade média</option><option value="passagens">Quantidade de passagens</option></select></div>
-<div class="scroll"><table><thead><tr><th>Posição</th><th>Participante</th><th>Máxima</th><th>Média</th><th>Passagens</th><th>Possíveis excessos</th></tr></thead><tbody id="ranking"></tbody></table></div></section>
-<footer>Protótipo acadêmico. Os possíveis excessos são demonstrativos. A associação a participantes é manual.</footer>
+<footer>Protótipo acadêmico. Os possíveis excessos são demonstrativos.</footer>
 </main>
-<dialog id="edicao"><form id="associacao"><h2>Associar participante</h2><label>Nome ou apelido<input id="nome" maxlength="80" placeholder="Vazio remove a associação"></label><label id="campoChave" hidden>Chave de edição<input id="chave" type="password" autocomplete="off"></label><p id="erroEdicao" role="status"></p><div class="actions"><button type="button" id="cancelar">Cancelar</button><button>Salvar</button></div></form></dialog>
 <script src="./config.js"></script>
 <script>
 const by = id => document.getElementById(id);
 const kmh = v => v == null ? '—' : Number(v).toLocaleString('pt-BR',{maximumFractionDigits:2})+' km/h';
 const data = v => new Date(v).toLocaleString('pt-BR');
-let pagina = 1, filtros = new URLSearchParams(), atualizacao = 0, editando, exigeChave;
+let pagina = 1, filtros = new URLSearchParams(), atualizacao = 0;
 const origemAPI = window.RADAR_API_URL || '';
-const API = async (rota, options) => {
-  const resposta = await fetch(origemAPI+'/api/'+rota, {cache:'no-store',...options});
+const API = async (rota) => {
+  const resposta = await fetch(origemAPI+'/api/'+rota, {cache:'no-store'});
   if (!resposta.ok) throw Error('HTTP '+resposta.status);
   return resposta.json();
 };
@@ -104,15 +101,12 @@ function desenhar(id, valores, rotulos, cores, barras=false) {
 }
 async function atualizar() {
   const chamada=++atualizacao;
-  const fonte='simulado='+by('fonte').value;
   try {
-    const [estado, stats, historico, ranking] = await Promise.all([
-      API('status'), API('estatisticas?'+fonte),
-      API('registros?'+fonte+'&pagina='+pagina+'&'+filtros),
-      API('ranking?'+fonte+'&ordem='+by('ordem').value),
+    const [estado, stats, historico] = await Promise.all([
+      API('status'), API('estatisticas'),
+      API('registros?pagina='+pagina+'&'+filtros),
     ]);
     if(chamada!==atualizacao)return;
-    exigeChave=estado.chave_edicao;
     chip('servidor','Servidor · online',true);
     chip('coletor','Coletor · '+(estado.coletor?'ativo':'inativo'),estado.coletor);
     chip('arduino','Arduino · '+(estado.arduino?'serial aberta ('+estado.porta+')':'desconectado'),estado.arduino);
@@ -130,19 +124,14 @@ async function atualizar() {
     desenhar('deteccoes',[...minutos.values()],[...minutos.keys()].map(m=>new Date(m*60000).toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})),[],true);
     const tb=by('historico');tb.replaceChildren();
     for(const r of historico.registros){
-      const editar=document.createElement('button');editar.textContent=r.participante||'Associar';
-      editar.onclick=()=>{editando=r.id;by('nome').value=r.participante;by('campoChave').hidden=!exigeChave;by('erroEdicao').textContent='';by('edicao').showModal();};
       const status=document.createElement('span');status.textContent=r.status==='excesso'?'Possível excesso':'Dentro do limite';
       status.className=r.status==='excesso'?'alert':'ok';
-      linha(tb,[data(r.capturado_em),r.radar_id,editar,kmh(r.velocidade_kmh),kmh(r.velocidade_max_kmh),r.status==='excesso'?kmh(r.velocidade_kmh-r.velocidade_max_kmh):'—',status]);
+      linha(tb,[data(r.capturado_em),r.radar_id,kmh(r.velocidade_kmh),kmh(r.velocidade_max_kmh),r.status==='excesso'?kmh(r.velocidade_kmh-r.velocidade_max_kmh):'—',status]);
     }
-    if(!tb.rows.length)vazio(tb,'Nenhuma passagem encontrada.',7);
+    if(!tb.rows.length)vazio(tb,'Nenhuma passagem encontrada.',6);
     by('contagem').textContent=historico.total+' registros';
     by('pagina').textContent='Página '+pagina;
     by('anterior').disabled=pagina===1;by('proxima').disabled=pagina*25>=historico.total;
-    const rk=by('ranking');rk.replaceChildren();
-    ranking.forEach((r,i)=>linha(rk,[i+1,r.participante,kmh(r.maior),kmh(r.media),r.passagens,r.excessos]));
-    if(!rk.rows.length)vazio(rk,'Associe uma passagem a um participante para formar o ranking.',6);
   }catch(erro){
     if(chamada!==atualizacao)return;
     chip('servidor','Servidor · sem resposta',false);chip('coletor','Coletor · —',false);chip('arduino','Arduino · —',false);
@@ -155,15 +144,7 @@ by('filtros').onsubmit=e=>{
   pagina=1;atualizar();
 };
 by('filtros').onreset=()=>{filtros=new URLSearchParams();pagina=1;atualizar();};
-by('fonte').onchange=()=>{pagina=1;atualizar();};by('ordem').onchange=atualizar;
 by('anterior').onclick=()=>{pagina--;atualizar();};by('proxima').onclick=()=>{pagina++;atualizar();};
-by('cancelar').onclick=()=>by('edicao').close();
-by('associacao').onsubmit=async e=>{
-  e.preventDefault();try{
-    await API('registros/'+editando+'/participante',{method:'PATCH',headers:{'Content-Type':'application/json','X-Radar-Key':by('chave').value},body:JSON.stringify({participante:by('nome').value})});
-    by('edicao').close();atualizar();
-  }catch(erro){by('erroEdicao').textContent='Falha ao salvar ('+erro.message+').';}
-};
 if (location.hostname.endsWith('.github.io') && !origemAPI) {
   by('servidor').textContent='Servidor · aguardando configuração';
   by('erro').textContent='O painel foi publicado. Falta configurar RADAR_API_URL no repositório para receber passagens.';
