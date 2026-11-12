@@ -41,15 +41,6 @@ Arduino Uno e dois HC-SR04, espaçados em 15 cm. O sketch que já funcionou cont
 
 A data do registro é o instante em que o coletor recebeu o JSON. O limite vem do firmware Arduino, atualmente 4 km/h. A indicação de Arduino conectado significa que o coletor abriu a porta serial. A passagem no histórico confirma o funcionamento dos sensores.
 
-## Simulação
-
-Com o servidor rodando, use um terminal adicional:
-
-```powershell
-.\.venv\Scripts\python.exe coletor.py --simular --fila fila_simulada.sqlite3
-```
-
-Selecione **Modo simulado** no painel. Os eventos simulados ficam fora do histórico, dos gráficos e do ranking de passagens reais. Pare com Ctrl+C.
 
 ## Apresentar em outro aparelho da mesma rede
 
@@ -60,7 +51,7 @@ Inicie o servidor com `--host 0.0.0.0` e mantenha o coletor no computador ligado
 A aplicação pode ser executada em uma hospedagem de containers com HTTPS e volume persistente. O Dockerfile serve a interface e o FastAPI na mesma URL. A máquina com o Arduino continua rodando apenas o coletor, que faz conexões de saída. Aponte o coletor para essa URL após publicar.
 
 - Monte um volume em `/data` para persistir o SQLite.
-- Configure no servidor `RADAR_API_KEY` com uma chave longa e aleatória. Opcionalmente, use outra chave em `RADAR_ADMIN_KEY` para a associação de participantes no painel.
+- Configure no servidor `RADAR_API_KEY` com uma chave longa e aleatória.
 - O dashboard e suas consultas são legíveis por quem puder acessar a URL. Se a apresentação for restrita, use os controles de acesso da hospedagem de forma compatível com o coletor ou mantenha na rede local.
 - No PowerShell do computador com o Arduino, configure a mesma chave de ingestão e inicie o coletor com a URL HTTPS do servidor:
 
@@ -78,9 +69,8 @@ Antes de trocar entre servidor local e remoto, encerre o coletor e confira a fil
 | Acesso negado à COM3 | Feche o Monitor Serial e outros programas que estejam usando a porta. |
 | Porta não encontrada | Confirme a COM atual na Arduino IDE e ajuste `--porta`. |
 | Capturado, mas envio pendente | Verifique se a API está rodando, a URL e, se usada, a chave. A fila em SQLite mantém as passagens até o próximo envio. |
-| Painel sem passagens | Confirme a fonte selecionada e se o carrinho passou de S1 para S2. |
+| Painel sem passagens | Confirme se o carrinho passou de S1 para S2. |
 | HTTP 401 | Verifique se a chave do coletor é a mesma do servidor. |
-| Ranking vazio | Clique em **Associar** no histórico e digite um apelido. |
 
 API interativa em http://127.0.0.1:8000/docs.
 
