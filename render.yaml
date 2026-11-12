@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: radar-iot-gustavoberengani
+    runtime: docker
+    plan: free
+    branch: main
+    healthCheckPath: /api/status
+    envVars:
+      - key: RADAR_API_KEY
+        generateValue: true
+      - key: RADAR_PAGES_ORIGIN
+        value: https://gustavoberengani.github.io
