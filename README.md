@@ -4,6 +4,19 @@ Arduino Uno e dois HC-SR04, espaçados em 15 cm. O sketch que já funcionou cont
 
 **Arduino → USB / COM3 → coletor Python → FastAPI / SQLite → dashboard**
 
+## Preparação para a apresentação
+
+1. [Implante a API no Render](https://render.com/deploy?repo=https%3A%2F%2Fgithub.com%2FGustavoBerengani%2FRadar-IoT). O Blueprint cria um serviço gratuito, configura a origem do painel e gera a chave de ingestão. Quando o serviço estiver ativo, copie a URL HTTPS e localize `RADAR_API_KEY` em **Environment**. O banco SQLite do plano gratuito pode ser descartado em reinícios e deploys.
+2. Configure `RADAR_API_URL` como variável do repositório no GitHub e execute **Publicar painel** conforme a seção de GitHub Pages abaixo.
+3. No notebook Windows, instale Python 3.10 ou superior, extraia o ZIP do repositório e conecte o Arduino. Abra o PowerShell na pasta extraída e rode:
+
+   ```powershell
+   powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\iniciar-radar.ps1
+   ```
+
+   O iniciador instala as dependências, lista as portas e pede a COM, a URL HTTPS e a chave. A chave é digitada sem aparecer na tela e não é gravada pelo iniciador.
+4. Faça uma passagem real e confira **Enviado ao dashboard** no terminal e a leitura no histórico. Faça esse ensaio primeiro no notebook disponível.
+
 ## Primeiro teste com o Arduino no Windows
 
 1. Extraia o ZIP. Abra PowerShell na pasta extraída, onde está este README.
